@@ -506,8 +506,16 @@
             animation: spin 0.85s linear infinite;
         }
 
-        .ai-input {
+        .ai-field {
+            position: relative;
             flex: 1;
+            min-width: 0;
+            height: 42px;
+            overflow: hidden;
+        }
+
+        .ai-input {
+            width: 100%;
             min-width: 0;
             height: 42px;
             background: transparent;
@@ -518,6 +526,10 @@
         }
 
         .ai-input::placeholder { color: #9a93b3; }
+
+        .ai-marquee {
+            display: none;
+        }
 
         .ai-status {
             flex: 1;
@@ -612,26 +624,26 @@
             line-height: 1.2;
         }
 
-        .carousel-wrap { position: relative; }
-
-        .carousel {
-            display: flex;
-            gap: 22px;
-            overflow-x: auto;
-            scroll-snap-type: x mandatory;
-            scrollbar-width: none;
+        .carousel-wrap {
+            position: relative;
+            overflow: visible;
+            width: 100%;
         }
 
-        .carousel::-webkit-scrollbar { display: none; }
-
-        .card-shell { scroll-snap-align: start; }
+        .carousel {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+            width: 100%;
+        }
 
         .card-shell {
-            flex: 0 0 calc(33.333% - 15px);
+            min-width: 0;
             padding: 1px;
             background: linear-gradient(180deg, var(--card-a), var(--card-b));
-            clip-path: polygon(0 0, calc(100% - 42px) 0, 100% 42px, 100% 100%, 0 100%);
-            min-height: 320px;
+            clip-path: polygon(0 0, calc(100% - 32px) 0, 100% 32px, 100% 100%, 0 100%);
+            min-height: 280px;
+            box-sizing: border-box;
             transition: transform 0.35s ease;
         }
 
@@ -644,10 +656,10 @@
         .feature-card {
             position: relative;
             height: 100%;
-            min-height: 318px;
-            padding: 32px 28px 24px;
+            min-height: 278px;
+            padding: 24px 20px 20px;
             background: linear-gradient(180deg, rgba(21, 19, 29, 0.96), rgba(21, 19, 29, 0.88));
-            clip-path: polygon(0 0, calc(100% - 41px) 0, 100% 41px, 100% 100%, 0 100%);
+            clip-path: polygon(0 0, calc(100% - 31px) 0, 100% 31px, 100% 100%, 0 100%);
             overflow: hidden;
             display: flex;
             flex-direction: column;
@@ -684,7 +696,7 @@
         }
 
         .feature-card h3 {
-            font-size: 26px;
+            font-size: 20px;
             font-weight: 700;
             margin-bottom: 14px;
             position: relative;
@@ -693,7 +705,7 @@
         .feature-card p {
             color: var(--n-3);
             font-size: 14px;
-            max-width: 260px;
+            max-width: none;
             position: relative;
         }
 
@@ -727,12 +739,7 @@
             gap: 8px;
         }
 
-        .dots {
-            display: flex;
-            justify-content: center;
-            gap: 14px;
-            margin-top: 28px;
-        }
+        .dots { display: none; }
 
         .dot {
             width: 8px;
@@ -1103,10 +1110,10 @@
         /* ===== MOBILE ===== */
         @media (max-width: 1024px) {
             .nav { gap: 16px; }
-            .card-shell { flex: 0 0 calc(70% - 12px); }
             .how-grid { grid-template-columns: 1fr; gap: 32px; }
             .steps { grid-template-columns: 1fr 1fr; }
             .services-grid { grid-template-columns: 1fr 1fr; }
+            .carousel { grid-template-columns: 1fr 1fr; }
         }
 
         @media (max-width: 720px) {
@@ -1115,9 +1122,60 @@
             .nav-contact { gap: 10px 14px; }
             .nav-contact a { font-size: 11px; letter-spacing: 0.04em; }
             .float-toolbar, .float-card, .cross { display: none; }
-            .ai-bar { width: 90%; min-width: 0; bottom: 16%; }
-            .card-shell { flex: 0 0 88%; }
+            .ai-bar { width: 92%; min-width: 0; bottom: 16%; gap: 10px; padding-left: 14px; }
+            .ai-input::placeholder { color: transparent; }
+            .ai-marquee {
+                display: flex;
+                align-items: center;
+                position: absolute;
+                inset: 0;
+                overflow: hidden;
+                pointer-events: none;
+                mask-image: linear-gradient(90deg, transparent, #000 8%, #000 88%, transparent);
+            }
+            .ai-bar.is-focused .ai-marquee,
+            .ai-bar.is-filled .ai-marquee,
+            .ai-bar.is-generating .ai-marquee { display: none; }
+            .ai-marquee-track {
+                display: flex;
+                width: max-content;
+                white-space: nowrap;
+                color: #9a93b3;
+                font: 400 14px/1.4 Sora, sans-serif;
+                animation: placeholderSlide 9s linear infinite;
+            }
+            .ai-marquee-track span { padding-right: 48px; }
+            @keyframes placeholderSlide {
+                0% { transform: translateX(0); }
+                100% { transform: translateX(-50%); }
+            }
             .services-grid, .steps { grid-template-columns: 1fr; }
+            .carousel-wrap { overflow: hidden; }
+            .carousel {
+                display: flex;
+                gap: 0;
+                overflow-x: auto;
+                scroll-snap-type: x mandatory;
+                scroll-behavior: smooth;
+                scrollbar-width: none;
+                -webkit-overflow-scrolling: touch;
+            }
+            .carousel::-webkit-scrollbar { display: none; }
+            .card-shell {
+                flex: 0 0 100%;
+                min-width: 100%;
+                max-width: 100%;
+                scroll-snap-align: start;
+                scroll-snap-stop: always;
+            }
+            .feature-card h3 { font-size: 22px; }
+            .feature-card p { font-size: 14px; }
+            .dots {
+                display: flex;
+                justify-content: center;
+                gap: 14px;
+                margin-top: 20px;
+            }
             .hero-results { padding: 22px 16px; }
             .how-visual img { height: 360px; }
         }
@@ -1204,18 +1262,26 @@
 
                     <form class="ai-bar" id="urlForm" autocomplete="off">
                         <span class="ai-orb" aria-hidden="true"></span>
-                        <input
-                            class="ai-input"
-                            type="text"
-                            inputmode="url"
-                            id="urlInput"
-                            name="url"
-                            placeholder="Introduce tu web para analizarla"
-                            required
-                            autocomplete="url"
-                            spellcheck="false"
-                            aria-label="URL de tu web"
-                        >
+                        <div class="ai-field">
+                            <input
+                                class="ai-input"
+                                type="text"
+                                inputmode="url"
+                                id="urlInput"
+                                name="url"
+                                placeholder="Introduce tu web para analizarla"
+                                required
+                                autocomplete="url"
+                                spellcheck="false"
+                                aria-label="Introduce tu web para analizarla"
+                            >
+                            <span class="ai-marquee" aria-hidden="true">
+                                <span class="ai-marquee-track">
+                                    <span>Introduce tu web para analizarla</span>
+                                    <span>Introduce tu web para analizarla</span>
+                                </span>
+                            </span>
+                        </div>
                         <p class="ai-status" id="aiStatus" aria-live="polite">La IA está generando<span class="caret"></span></p>
                         <button class="ai-go" type="submit" id="btnAnalyze" aria-label="Analizar web">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
@@ -1424,34 +1490,64 @@
         const carousel = document.getElementById("carousel");
         const cards = [...carousel.children];
         const dotsWrap = document.getElementById("dots");
-        let activeDot = 1;
+        const mobileMq = window.matchMedia("(max-width: 720px)");
+        let featuredIndex = 0;
+        let autoTimer = null;
 
+        dotsWrap.innerHTML = "";
         cards.forEach((_, i) => {
             const btn = document.createElement("button");
-            btn.className = "dot" + (i === activeDot ? " active" : "");
-            btn.setAttribute("aria-label", "Ir a la tarjeta " + (i + 1));
-            btn.addEventListener("click", () => goToCard(i));
+            btn.type = "button";
+            btn.className = "dot" + (i === 0 ? " active" : "");
+            btn.setAttribute("aria-label", "Tarjeta " + (i + 1));
+            btn.addEventListener("click", function () {
+                goToCard(i);
+            });
             dotsWrap.appendChild(btn);
         });
 
-        function goToCard(index) {
-            activeDot = index;
-            const card = cards[index];
-            carousel.scrollTo({ left: card.offsetLeft - 8, behavior: "smooth" });
-            [...dotsWrap.children].forEach((dot, i) => dot.classList.toggle("active", i === index));
-            cards.forEach((c, i) => c.classList.toggle("is-featured", i === index));
+        function isMobileCarousel() {
+            return mobileMq.matches;
         }
 
-        carousel.addEventListener("scroll", () => {
-            const index = cards.reduce((closest, card, i) => {
-                const dist = Math.abs(card.offsetLeft - carousel.scrollLeft);
-                return dist < closest.dist ? { i, dist } : closest;
-            }, { i: 0, dist: Infinity }).i;
-            if (index !== activeDot) {
-                activeDot = index;
-                [...dotsWrap.children].forEach((dot, i) => dot.classList.toggle("active", i === index));
+        function goToCard(index) {
+            featuredIndex = ((index % cards.length) + cards.length) % cards.length;
+            cards.forEach((c, i) => c.classList.toggle("is-featured", i === featuredIndex));
+            [...dotsWrap.children].forEach((dot, i) => dot.classList.toggle("active", i === featuredIndex));
+            if (isMobileCarousel()) {
+                carousel.scrollTo({
+                    left: featuredIndex * carousel.clientWidth,
+                    behavior: "smooth"
+                });
+            } else {
+                carousel.scrollLeft = 0;
+            }
+        }
+
+        function startCarouselAuto() {
+            if (autoTimer) window.clearInterval(autoTimer);
+            autoTimer = window.setInterval(function () {
+                goToCard(featuredIndex + 1);
+            }, 3000);
+        }
+
+        carousel.addEventListener("scroll", function () {
+            if (!isMobileCarousel()) return;
+            const i = Math.round(carousel.scrollLeft / Math.max(carousel.clientWidth, 1));
+            if (i !== featuredIndex && i >= 0 && i < cards.length) {
+                featuredIndex = i;
+                cards.forEach((c, n) => c.classList.toggle("is-featured", n === i));
+                [...dotsWrap.children].forEach((dot, n) => dot.classList.toggle("active", n === i));
             }
         });
+
+        mobileMq.addEventListener("change", function () {
+            goToCard(0);
+            startCarouselAuto();
+        });
+
+        goToCard(0);
+        startCarouselAuto();
 
         const howData = [
             {
@@ -1725,9 +1821,19 @@
             return recs.slice(0, 6);
         }
 
+        function syncPlaceholderState() {
+            urlForm.classList.toggle("is-filled", urlInput.value.trim() !== "");
+        }
+
+        urlInput.addEventListener("input", syncPlaceholderState);
+        urlInput.addEventListener("focus", function () {
+            urlForm.classList.add("is-focused");
+        });
         urlInput.addEventListener("blur", function () {
+            urlForm.classList.remove("is-focused");
             const val = this.value.trim();
             if (val) this.value = normalizeUrl(val);
+            syncPlaceholderState();
         });
 
         const observer = new IntersectionObserver((entries) => {
@@ -1739,7 +1845,7 @@
             });
         }, { threshold: 0.12 });
 
-        document.querySelectorAll(".service-card, .card-shell, .how-visual, .how-copy").forEach((el) => {
+        document.querySelectorAll(".service-card, .how-visual, .how-copy").forEach((el) => {
             el.style.opacity = "0";
             el.style.transform = "translateY(28px)";
             el.style.transition = "opacity 0.6s ease, transform 0.6s ease";
